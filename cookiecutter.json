@@ -1,0 +1,23 @@
+{
+    "project_name": "Project Name",
+    "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_') }}",
+    "description": "A short description of the project.",
+    "author_name": "Witold Greń",
+    "email": "witold.gren@gmail.com",
+    "domain_name": "{{ cookiecutter.project_slug|replace('_', '-') }}.example.com",
+    "version": "0.0.1",
+    "use_celery": "y",
+    "use_sphinx": "y",
+    "use_django_rest_framework": "y",
+    "use_django_allauth": "n",
+    "use_django_storages": "n",
+    "use_django_channels": "n",
+    "use_django_amazon_ses": "n",
+    "use_graphql": "n",
+    "use_pycharm": "n",
+    "windows": "n",
+    "postgresql_version": ["13.1", "12.5", "No database"],
+    "python_version": ["3.9-slim", "3.9-alpine", "3.8-slim", "3.8-alpine"],
+    "django_version": ["3.1", "2.2"],
+    "open_source_license": ["Not open source", "Apache Software License 2.0", "GPLv3", "BSD", "MIT"]
+}

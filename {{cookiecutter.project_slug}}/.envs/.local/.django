@@ -1,0 +1,47 @@
+{% if cookiecutter.postgresql_version != 'No database' -%}
+# PostgreSQL
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+CONN_MAX_AGE=60
+{%- endif %}
+
+
+# General settings
+DJANGO_READ_DOT_ENV_FILE=False
+DJANGO_ADMIN_URL=
+DJANGO_SETTINGS_MODULE=config.settings.local
+
+
+# Settings module for tests
+DJANGO_SETTINGS_MODULE_TEST=config.settings.test
+DJANGO_SECRET_KEY=!!!SET DJANGO_SECRET_KEY!!!
+DJANGO_ALLOWED_HOSTS=*
+
+
+{% if cookiecutter.use_django_allauth == 'y' -%}
+# django-allauth
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+{%- endif %}
+
+
+{% if cookiecutter.use_celery == 'y' -%}
+# Celery
+CELERY_BROKER_URL=redis://redis:6379
+{%- endif %}
+
+
+# Django Cache
+REDIS_URL=redis://redis:6379
+
+
+{% if cookiecutter.use_celery == 'y' -%}
+# Flower
+CELERY_FLOWER_USER=flower_user
+CELERY_FLOWER_PASSWORD=flower_password
+{%- endif %}
+
+
+{% if cookiecutter.use_django_channels == 'y' -%}
+# Django Channels
+CHANNEL_LAYERS_HOSTS=redis://redis:6379/0
+{%- endif %}

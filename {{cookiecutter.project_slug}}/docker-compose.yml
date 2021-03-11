@@ -1,0 +1,88 @@
+version: '3.9'
+
+services:
+  {%- if cookiecutter.postgresql_version != 'No database' %}
+  db:
+    user: "${UID:-1000}"
+    image: postgres:{{ cookiecutter.postgresql_version }}
+    volumes:
+      - ./shared/postgresql:/var/lib/postgresql/data
+    env_file:
+      - .envs/.local/.postgres
+    environment:
+      # We set PGDATA to a subfolder because Postgres needs this folder to be
+      # empty, and we have a .gitkeep file there
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - {{ cookiecutter.project_slug|replace('_', '-') }}
+  {%- endif %}
+  
+  app: {% if cookiecutter.use_celery == 'y' %} &app{% endif %}
+    user: "${UID:-1000}"
+    container_name: {{ cookiecutter.project_slug|replace('_', '-') }}-app
+    build:
+      network: host
+      context: .
+      dockerfile: ./docker/Dockerfile
+      args:
+        DEV_MODE: "1"
+        USER_ID: "${UID:-1000}"
+    command: "/start-runserver.sh"
+    ports:
+      - "8000:8000"
+    {%- if cookiecutter.postgresql_version != 'No database' %}
+    depends_on:
+      - db
+    {%- endif %}
+    env_file:
+      - .envs/.local/.django
+      {% if cookiecutter.postgresql_version != 'No database' -%}
+      - .envs/.local/.postgres
+      {%- endif %}
+    volumes:
+      - ./backend:/app
+      - ./shared/media:/app/shared/media
+      - ./shared/static:/app/shared/static
+      - ./shared/templates:/app/shared/templates
+      {% if cookiecutter.use_sphinx == 'y' %}- ./docs:/docs{% endif %}
+    networks:
+      - {{ cookiecutter.project_slug|replace('_', '-') }}
+
+  redis:
+    image: redis:5.0.10
+    networks:
+      - {{ cookiecutter.project_slug|replace('_', '-') }}
+{% if cookiecutter.use_celery == 'y' %}
+  celeryworker:
+    <<: *app
+    container_name: {{ cookiecutter.project_slug|replace('_', '-') }}-celeryworker
+    depends_on:
+      - redis
+      {% if cookiecutter.postgresql_version != 'No database' %}- db{% endif %}
+    ports: []
+    command: /start-celeryworker.sh
+    networks:
+      - {{ cookiecutter.project_slug|replace('_', '-') }}
+
+  celerybeat:
+    <<: *app
+    container_name: {{ cookiecutter.project_slug|replace('_', '-') }}-celerybeat
+    depends_on:
+      - redis
+      {% if cookiecutter.postgresql_version != 'No database' %}- db{% endif %}
+    ports: []
+    command: /start-celerybeat.sh
+    networks:
+      - {{ cookiecutter.project_slug|replace('_', '-') }}
+
+  # flower:
+  #   <<: *app
+  #   container_name: {{ cookiecutter.project_slug|replace('_', '-') }}-flower
+  #   ports:
+  #     - "5555:5555"
+  #   command: /start-flower.sh
+{%- endif %}
+
+networks:
+  {{ cookiecutter.project_slug|replace('_', '-') }}:
+    driver: bridge

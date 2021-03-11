@@ -1,0 +1,205 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = '{{ cookiecutter.python_version[:3] }}'
+
+[packages]
+# Django
+django = "~={{ cookiecutter.django_version }}.0"
+
+# HTTP for Humans
+requests = "*"
+
+# Configuration
+environs = {version = "~=9.3.0", extras=["django"]}
+
+{% if cookiecutter.use_django_rest_framework == 'n' or cookiecutter.use_django_allauth == 'y' %}
+# Forms
+django-crispy-forms = "~=1.10.0"
+{% endif %}
+# Models
+django-model-utils = "~=4.1.1"
+
+# Images
+Pillow = "~=8.1.0"
+
+# Password storage
+argon2-cffi = "~=20.1.0"
+
+# Health check
+django-health-check = "~=3.16.2"{% if cookiecutter.use_django_allauth == 'y' %}
+
+# For user registration, either via email or social
+django-allauth = "~=0.44.0"
+{% endif %}
+{%- if cookiecutter.postgresql_version != 'No database' %}
+# Python-PostgreSQL Database Adapter
+psycopg2-binary = "~=2.8.6"
+{%- endif %}
+# Unicode slugification
+python-slugify = "~=4.0.1"
+
+# Time zones support
+pytz = "*"
+
+# Redis support for cache and celery
+django-redis = "~=4.12.1"
+redis = "~=3.5.3"
+{% if cookiecutter.use_celery == 'y' %}
+# Distributed Task Queue
+celery = "~=5.0.5"
+# flower = "~=0.9.7"  # https://github.com/mher/flower waiting for support celery 5
+{% endif %}
+{% if cookiecutter.use_django_rest_framework == 'y' %}
+# Powerful and flexible toolkit for building Web APIs
+djangorestframework = "~=3.12.2"
+django-rest-auth = "~=0.9.5"
+
+# Python implementation of Markdown for DRF
+Markdown = "~=3.3.3"
+
+# Reusable app for filter querysets dynamically
+django-filter = "~=2.4.0"
+
+# API documentation
+prance = "~=0.20.2"
+openapi-spec-validator = "~=0.2.9"
+{% endif %}
+
+{% if cookiecutter.use_django_channels == 'y' %}
+# Django Channels
+channels = "~=3.0.3"
+channels_redis = "~=3.2.0"
+daphne = "~=3.0.1"
+{% endif %}
+{% if cookiecutter.use_django_storages == 'y' %}
+# Django storage in AWS S3
+django-storages = {version = "~=1.11.1", extras = ["boto3"]}
+{% endif %}
+
+# Exports Django monitoring metrics for Prometheus.io
+django-prometheus = "~=2.1.0"
+
+# Adds CORS headers to responses
+django-cors-headers = "~=3.6.0"
+
+# WSGI Handler
+gevent = "~=21.1.2"
+gunicorn = "~=20.0.4"
+
+# Health check memory and CPU usage
+psutil = "~=5.8.0"
+
+# Sentry SDK client
+sentry_sdk = "~=0.19.0" # minimum version for the asgi middleware
+
+# Install AWS CLI for debugging
+# awscli = "*"
+
+{% if cookiecutter.use_django_amazon_ses == 'y' -%}
+# For sending emails
+django-amazon-ses = "~=4.0.0"
+{% endif -%}
+
+{% if cookiecutter.use_graphql == 'y' %}
+# GraphQL (graphene)
+graphene-django = "~=2.15.0"
+{% endif %}
+
+# Your custom base dependencies do below this line
+# ----------------------------------------------------------------------------
+
+
+#------------------------- DEV DEPENDENCIES START HERE -----------------------
+[dev-packages]
+
+{% if cookiecutter.use_sphinx == 'y' %}
+# Create documentation
+Sphinx = "~=3.4.3"
+sphinx_rtd_theme = "~=0.5.1"{% endif %}
+
+# WSGI utility library for Python
+Werkzeug = "~=1.0.1"
+
+# Collection of useful extensions
+django-extensions = "~=3.1.0"
+
+# Python debugger
+pudb = "~=2020.1"
+
+# jupyter module
+# jupyter = "~=1.0.0"
+
+# Code coverage
+coverage = "~=5.3.1"
+
+# create model fixture
+factory-boy = "~=3.2.0"
+
+# best testing framework
+pytest = "~=6.2.1"
+
+# pytest plugin produces coverage reports
+pytest-cov = "~=2.11.1"
+
+# testing django with pytest
+pytest-django = "~=4.1.0"
+
+# distributed testing and loop-on-failing modes
+pytest-xdist = "~=2.2.0"
+
+# changes the default look test results
+pytest-sugar = "~=0.9.4"
+
+# pytest plugin for faker
+# pytest-faker = "~=2.0.0"
+
+# pytest plugin for mock module
+pytest-mock = "~=3.5.1"
+
+# pytest plugin for pudb
+pytest-pudb = "~=0.7.0"
+
+# pytest plugin for factoryboy
+pytest-factoryboy = "~=2.0.3"
+
+# pytest plugin to enable format checking with black
+# pytest-black = "==0.3.7"
+
+# pytest plugin to enable format checking with isort
+# pytest-isort = "==0.3.1"
+
+# app for create functional testing
+django-webtest = "~=1.9.7"
+
+# very useful toolbar for debuging project
+django-debug-toolbar = "~=3.2"
+
+{% if cookiecutter.use_django_rest_framework == 'n' %}
+# A plugin for coverage.py to measure Django template execution
+django-coverage-plugin = "~=1.8.0"
+{% endif %}
+
+# very easy request mock
+requests-mock = "~=1.8.0"
+
+# code audit tools
+isort = "~=5.7.0"
+pylama = "~=7.7.1"
+pylama-pylint = "~=3.1.1"
+pylint-django = "~=2.4.2"
+{% if cookiecutter.use_celery == 'y' %}pylint-celery = "~=0.3"{% endif %}
+radon = "~=4.3.2"
+black = "==20.8b1"
+
+# Mypy and stubs
+mypy = ">=0.800"
+django-stubs = ">=1.7.0"
+{% if cookiecutter.use_django_rest_framework == 'y' %}djangorestframework-stubs = ">=1.3.0"{% endif %}
+boto3-stubs = "*"
+
+# Your custom dev dependencies go below this line
+# ----------------------------------------------------------------------------

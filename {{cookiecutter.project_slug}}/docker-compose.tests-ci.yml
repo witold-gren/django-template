@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+  {%- if cookiecutter.postgresql_version != 'No database' %}
+  db:
+    image: postgres:{{ cookiecutter.postgresql_version }}
+    env_file:
+      - .envs/.local/.postgres
+  {% endif %}
+  app:
+    container_name: {{ cookiecutter.project_slug|replace('_', '-') }}-test
+    command: runcitest
+    image: witoldgren/{{ cookiecutter.project_slug|replace('_', '-') }}-backend:${GIT_COMMIT}
+    {%- if cookiecutter.postgresql_version != 'No database' %}
+    depends_on:
+      - db
+    {%- endif %}
+    env_file:
+      - .envs/.local/.django
+      {% if cookiecutter.postgresql_version != 'No database' %}- .envs/.local/.postgres{% endif %}
+    environment:
+      - DJANGO_SETTINGS_MODULE_TEST=config.settings.test
